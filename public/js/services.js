@@ -9,7 +9,7 @@ angular.module('myApp.services', []).
     ws.onmessage = function(receivedData) {
       $rootScope.$apply(function() {
         var message = JSON.parse(receivedData.data);
-        console.log("msg received", message);
+        //console.log("msg received", message);
         if (message.msgType === "txlog") {
           Service.transactionLog.txs = message.txs;
         }
@@ -29,6 +29,7 @@ angular.module('myApp.services', []).
       },
 
       sendMsg: function(msg) {
+        //console.log("sending", msg);
         this.ws.send(JSON.stringify(msg));
       }
     };

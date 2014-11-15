@@ -4,6 +4,7 @@ import akka.actor._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._  
 import scala.concurrent.duration._
+import org.lucky7.feelinglucky._
 
 object WebsocketActor {
   def props(out: ActorRef) = Props(new WebsocketActor(out))
@@ -15,14 +16,14 @@ object WebsocketActor {
 
 case class SendTransactions(txs: List[Transaction], msgType: String = "txlog")
 case class Transaction(sender: String, receiver: String, amount: String)
-case class PlayLottery(amount: Int, msgType: String = "playLottery")
+case class PlayLottery(amount: Int, accId: String, msgType: String = "playLottery")
 
 class WebsocketActor(out: ActorRef) extends Actor {
   import context.dispatcher
   import WebsocketActor._
 
   var transactions: List[Transaction] = List()
-  var lastPlayLotteryReceived = getTime
+  var lastPlayLotteryReceived = getTime - 10
   val playLotteryRate = 5 //seconds indicating how quickly someone can send request to play the lottery
   
   val tick = context.system.scheduler.schedule(2 seconds, 5000 millis, self, "tick")
@@ -39,7 +40,8 @@ class WebsocketActor(out: ActorRef) extends Actor {
         if (playLottery.amount > 0 && playLottery.amount <= 3)
         if (now - lastPlayLotteryReceived >= playLotteryRate)
       } yield {
-        println("we have received a valid playLottery msg")
+        println("we have received a valid playLottery msg: " + playLottery)
+        println("processed in transactions: " + Main.processedInTransactions)
         lastPlayLotteryReceived = getTime
       }
   }
