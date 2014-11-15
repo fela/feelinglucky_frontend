@@ -1,7 +1,7 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit request: Request[Any])
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="myApp">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,7 +13,7 @@
     <link href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")" rel="stylesheet">
   </head>
   <body>
-
+<input  type="hidden" id="ws-url" value="@routes.Application.socket.webSocketURL()"/>
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
@@ -39,14 +39,33 @@
       <div class="jumbotron">
         <h1>Stellar Lottery</h1>
         <p></p>
-        <p><a href="#" class="btn btn-primary btn-lg" role="button">Start playing &raquo;</a></p>
+        <p>
+          <button href="#" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+            Play the Lottery &raquo;
+          </button>
+        </p>
       </div>
 
     </div>
 
-
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div ng-view></div>
+        </div>
+      </div>
+    </div>   
 
     <script src="@routes.Assets.at("javascripts/jquery.1.11.1.min.js")"></script>
     <script src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")"></script>
+
+    <script src="@routes.Assets.at("lib/angular/angular.js")"></script>
+    <script src="@routes.Assets.at("lib/angular/angular-route.js")"></script>
+    <script src="@routes.Assets.at("js/app.js")"></script>
+    <script src="@routes.Assets.at("js/services.js")"></script>
+    <script src="@routes.Assets.at("js/controllers.js")"></script>
+    <script src="@routes.Assets.at("js/filters.js")"></script>
+    <script src="@routes.Assets.at("js/directives.js")"></script>
+
   </body>
 </html>

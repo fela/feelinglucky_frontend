@@ -4,16 +4,14 @@ import actors.WebsocketActor
 import play.api.mvc._
 import play.api.mvc._
 import play.api.Play.current
-//import stellar._
+import stellar._
 import play.api.libs.json.{JsArray, JsValue, Json}
 
 object Application extends Controller {
 
-  def index = Action {
-    /*
+  def index = Action { implicit request =>
+    
     val txLog = StellerDummy.getTxLog()
-    println(txLog(0).rawJson)
-    */
 
     Ok(views.html.index("Your new application is ready."))
   }
@@ -25,7 +23,7 @@ object Application extends Controller {
 }
 
 object StellerDummy {
-/*
+
   private val txnlog: String = io.Source.fromInputStream(getClass.getResourceAsStream("/dummyTransactions.json")).getLines().mkString("")
 
   private val jsv: JsValue = Json.parse(txnlog) \ "result"
@@ -34,5 +32,5 @@ object StellerDummy {
 	def getTxLog(): List[Transaction] = {
     txns
 	}
-	*/
+	
 }

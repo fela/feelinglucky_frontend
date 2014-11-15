@@ -16,4 +16,6 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.2"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
 
+libraryDependencies += "org.lucky7" %% "feelinglucky" % "1.0-SNAPSHOT"
+
 scalaVersion := "2.11.2"
