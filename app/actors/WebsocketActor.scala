@@ -98,8 +98,10 @@ class WebsocketActor(out: ActorRef) extends Actor {
         if (now - lastPlayLotteryReceived >= playLotteryRate)
       } yield {
         println("we have received a valid playLottery msg: " + playLottery)
-        println("processed in transactions: " + Main.processedInTransactions)
         lastPlayLotteryReceived = getTime
+
+        //val (accId, secret) = ???
+        stellar.API.makePayment(secret = "sf89NDAo9NiJ3YXDUW57oVe2fhJPbcnWNbiPYQYzCT4kdPmaaf3", receiver = "gsMxVfhj1GmHspP5iARzMxZBZmPya9NALr", sender = "gaMTKErDVNx5ZHQnHAZpCDtw2LfzDbYzcq", amount = "2340000")
       }
   }
 
