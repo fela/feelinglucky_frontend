@@ -35,7 +35,14 @@
         <select ng-model="lotteryAmount" ng-options="a.amount for a in lotteryAmounts" class="form-control"></select>
       </label> 
       <br>
-      <button type="button" class="btn btn-primary btn-lg" ng-click="playLottery()">Play now!</button>    
+      <button 
+        type="button" 
+        class="btn btn-primary btn-lg" 
+        ng-click="playLottery()" 
+        ng-disabled="cannotPlay">
+          Play now!
+        </button>
+        <p ng-show="cannotPlay">We're sending your Lottery Ticket ...</p> 
     </p>
   </div>
 
@@ -43,9 +50,9 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
 
-      <h3>Transaction List</h3>
+    <div class="col-md-6">
+      <h3>The lottery received these transactions:</h3>
       <table class="table table-striped">
       <thead>
         <tr>
@@ -53,37 +60,32 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="transaction in transactionLog.txs">
+        <tr ng-repeat="transaction in transactionLog.incoming">
           <th>{{ transaction.sender }}</th>
           <th>{{ transaction.receiver }}</th>
-          <th>{{ transaction.amount }}</th>
+          <th>{{ getAmount(transaction.amount) }} STR</th>
         </tr>  
       </tbody>
       </table>
-
-
-      <!-- Modal -->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Play the Lottery</h4>
-          </div>
-          <div class="modal-body">
-            <label>
-              Choose the amount you want to spend:
-              <select ng-model="lotteryAmount" ng-options="a.amount for a in lotteryAmounts" class="form-control"></select>
-            </label>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" ng-click="playLottery()">Play!</button>
-          </div>
-        </div>
-      </div>
-      </div>    
-
     </div>
+
+    <div class="col-md-6">
+      <h3>The lottery paid out these transactions:</h3>
+      <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Sender</th><th>Receiver</th><th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="transaction in transactionLog.outgoing">
+          <th>{{ transaction.sender }}</th>
+          <th>{{ transaction.receiver }}</th>
+          <th>{{ getAmount(transaction.amount) }} STR</th>
+        </tr>  
+      </tbody>
+      </table>
+    </div>    
+
   </div>
 </div> 

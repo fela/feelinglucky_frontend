@@ -10,14 +10,27 @@ angular.module('myApp.controllers', [])
   $scope.lotteryAmount = $scope.lotteryAmounts[1];
   $scope.accountName = $cookies.accName;//$cookies.accName.substring(1, $cookies.accName.length-1);
 
-  $scope.playLottery = function() {
-  var msg = {
-      msgType: "playLottery", 
-      amount: $scope.lotteryAmount.amount,
-      accName: $cookies.accName
+  $scope.getAmount = function(amountStr) {
+    return parseInt(amountStr, 10) / 1000000;
   };
-  WS.sendMsg(msg);
 
-  $('#myModal').modal('hide');
+  $scope.cannotPlay = false;
+
+  $scope.playLottery = function() {
+    $scope.cannotPlay = true;
+    window.setTimeout(function() {
+      console.log("after timeout", $scope.cannotPlay);
+      $scope.$apply(function() {
+        $scope.cannotPlay = false;
+      });
+      
+    }, 5000);
+
+    var msg = {
+        msgType: "playLottery", 
+        amount: $scope.lotteryAmount.amount,
+        accName: $cookies.accName
+    };
+    WS.sendMsg(msg);
   };
 }]);

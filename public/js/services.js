@@ -11,7 +11,8 @@ angular.module('myApp.services', []).
         var message = JSON.parse(receivedData.data);
         //console.log("msg received", message);
         if (message.msgType === "txlog") {
-          Service.transactionLog.txs = message.txs;
+          Service.transactionLog.incoming = message.incoming;
+          Service.transactionLog.outgoing = message.outgoing;
         }
       });
     }; 
@@ -25,7 +26,8 @@ angular.module('myApp.services', []).
     var Service = {
       ws: ws,
       transactionLog: {
-        txs: []
+        incoming: [],
+        outgoing: []
       },
 
       sendMsg: function(msg) {

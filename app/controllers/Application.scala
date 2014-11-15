@@ -45,6 +45,7 @@ object StellerDummy {
   )
 
   def accNameForId(id: String): Option[String] = accounts.find(_.accId == id).map(_.accName)
+  def accForName(name: String): Option[StellarAccount] = accounts.find(_.accName == name)
 
 	private var usedAccounts: Set[String] = Set()
 

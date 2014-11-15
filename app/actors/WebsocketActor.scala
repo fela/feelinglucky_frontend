@@ -29,9 +29,11 @@ class TransactionActor extends Actor {
  
 }
 
-case class SendTransactions(txs: List[Transaction], msgType: String = "txlog")
+case class SendTransactions(incoming: List[Transaction], outgoing: List[Transaction], msgType: String = "txlog")
 case class Transaction(sender: String, receiver: String, amount: String)
-case class PlayLottery(amount: Int, accName: String, msgType: String = "playLottery")
+case class PlayLottery(amount: Int, accName: String, msgType: String = "playLottery") {
+  def getAmount = amount * 1000000
+}
 
 class WebsocketActor(out: ActorRef) extends Actor {
   import context.dispatcher
@@ -41,39 +43,49 @@ class WebsocketActor(out: ActorRef) extends Actor {
   var lastPlayLotteryReceived = getTime - 10
   val playLotteryRate = 5 //seconds indicating how quickly someone can send request to play the lottery
 
-  val tick = context.system.scheduler.schedule(2 seconds, 5 seconds, self, "tick")
+  val tick = context.system.scheduler.schedule(500 millis, 50 seconds, self, "tick")
 
   def receive = {
     case "tick" => 
       //transactions = Transaction("sender", "receiver", "1337") :: transactions
-       def updateTransactions() = {
+       def updateTransactions(): (List[Transaction], List[Transaction]) = {
           val txs = Main.getTransactionList()
           val (outTxs, inTxs) = Main.splitOutIn(txs)
           //inTxs are received payments
           val inWithNameFiltered = inTxs.txs.filter { tx =>
-
             println(s"trying to get accName for: ${tx.account}: ${StellerDummy.accNameForId(tx.account)}")
-            //(tx.rawJson \ "tx" \ "Destination").asOpt[String].isDefined &&
             tx.isPayment && 
             StellerDummy.accNameForId(tx.account).isDefined
           }
-          println(s"inWithNameFiltered: $inWithNameFiltered")
+          val inWithName = inWithNameFiltered.toList.sortWith { case (a, b) =>
+            val aTime = (a.rawJson \ "tx" \ "date").asOpt[Int]
+            val bTime = (b.rawJson \ "tx" \ "date").asOpt[Int]
 
-          val inWithName = inWithNameFiltered.toList.map { tx =>
+            (aTime, bTime) match {
+              case (Some(at), Some(bt)) => at > bt
+              case _ => false
+            }
+          }.map { tx =>
             val jsonAmount = tx.rawJson \ "tx" \ "Amount"
             val (amount, currency) = jsonAmount match {
               case JsString(value) => (value, "STR")
               case _ => ( (jsonAmount \ "value").as[String], (jsonAmount \ "currency"))
             }            
             val accName = StellerDummy.accNameForId(tx.account).getOrElse("Unknown account")
-            //val destName = StellerDummy.accNameForSecret((tx.rawJson \ "tx" \ "Destination").as[String]).getOrElse("Unknown Account")
             Transaction(accName, "Stellar Lottery", amount + s"($currency)")
           }
           val outWithName = outTxs.txs.filter { tx =>
-            //(tx.rawJson \ "tx" \ "Destination").asOpt[String].isDefined
             tx.isPayment && 
             StellerDummy.accNameForId((tx.rawJson \ "tx" \ "Destination").as[String]).isDefined
-          }.toList.map { tx =>
+          }.toList.sortWith { case (a, b) =>
+            val aTime = (a.rawJson \ "tx" \ "date").asOpt[Int]
+            val bTime = (b.rawJson \ "tx" \ "date").asOpt[Int]
+
+            (aTime, bTime) match {
+              case (Some(at), Some(bt)) => at > bt
+              case _ => false
+            }
+          }.map { tx =>
             val jsonAmount = tx.rawJson \ "tx" \ "Amount"
             val (amount, currency) = jsonAmount match {
               case JsString(value) => (value, "STR")
@@ -84,11 +96,12 @@ class WebsocketActor(out: ActorRef) extends Actor {
           }
           println("inWithName: " + inWithName)
           println("outWithName: " + outWithName)
+          (inWithName, outWithName)
 
       }
-      updateTransactions()
+      val (inTxs, outTxs) = updateTransactions()
 
-      out ! (Json.toJson(SendTransactions(transactions)).toString)
+      out ! (Json.toJson(SendTransactions(inTxs, outTxs)).toString)
     case msg: String =>
       val playLotteryOpt = Json.fromJson[PlayLottery](Json.parse(msg)).asOpt
       val now = getTime
@@ -100,8 +113,14 @@ class WebsocketActor(out: ActorRef) extends Actor {
         println("we have received a valid playLottery msg: " + playLottery)
         lastPlayLotteryReceived = getTime
 
-        //val (accId, secret) = ???
-        stellar.API.makePayment(secret = "sf89NDAo9NiJ3YXDUW57oVe2fhJPbcnWNbiPYQYzCT4kdPmaaf3", receiver = "gsMxVfhj1GmHspP5iARzMxZBZmPya9NALr", sender = "gaMTKErDVNx5ZHQnHAZpCDtw2LfzDbYzcq", amount = "2340000")
+        StellerDummy.accForName(playLottery.accName).foreach { acc =>
+          println(s"sending from acc: ${acc}")
+          stellar.API.makePayment(
+            secret = acc.secretKey, 
+            receiver = "gsMxVfhj1GmHspP5iARzMxZBZmPya9NALr", 
+            sender = acc.accId,
+            amount = playLottery.getAmount.toString)
+        }
       }
   }
 
