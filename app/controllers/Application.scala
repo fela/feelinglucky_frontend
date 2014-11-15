@@ -36,10 +36,16 @@ object Application extends Controller {
 object StellerDummy {
 
   private val accountNames: List[String] = io.Source.fromInputStream(getClass.getResourceAsStream("/names.txt")).getLines().toList
-  println("accnames: " + accountNames)
 
   case class StellarAccount(accName: String, accId: String, secretKey: String)
-  val accounts = List(StellarAccount(getAccName, "gaMTKErDVNx5ZHQnHAZpCDtw2LfzDbYzcq", "sf89NDAo9NiJ3YXDUW57oVe2fhJPbcnWNbiPYQYzCT4kdPmaaf3"))
+  val accounts = List(
+    StellarAccount(getAccName, "gaMTKErDVNx5ZHQnHAZpCDtw2LfzDbYzcq", "sf89NDAo9NiJ3YXDUW57oVe2fhJPbcnWNbiPYQYzCT4kdPmaaf3"),
+    StellarAccount(getAccName, "gMxUtnoVcknHQKvUrr9ctL4Vs8PJEU9fRG", "s3mUQCq85YTdYyT6trtA81q95aeRwixbyGC3cXan3VNdNHwzhqT"),
+    StellarAccount(getAccName, "g45uiJenewBTAfSbHsuRQiVZfFQHaqVbLo", "sfmrmX1U1XZiGswndhn1Hjup2RcHJQUe7dTBSAVXSktdzeab8ow")
+  )
+
+  def accNameForId(id: String): Option[String] = accounts.find(_.accId == id).map(_.accName)
+
 	private var usedAccounts: Set[String] = Set()
 
   def getRandomAccount: Option[StellarAccount] = {
@@ -50,7 +56,9 @@ object StellerDummy {
     unusedAcc
   }
 
-  private def getAccName = {
-    accountNames(scala.util.Random.nextInt(accountNames.length))
+  private var accNameIdx = -1
+  private def getAccName: String = {
+    accNameIdx += 1
+    accountNames(accNameIdx)
   }
 }

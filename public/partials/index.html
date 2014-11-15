@@ -1,46 +1,89 @@
-
-<h3>Transaction List</h3>
-<table class="table table-striped">
-<thead>
-  <tr>
-    <th>Sender</th><th>Receiver</th><th>Amount</th>
-  </tr>
-</thead>
-<tbody>
-  <tr ng-repeat="transaction in transactionLog.txs">
-    <th>{{ transaction.sender }}</th>
-    <th>{{ transaction.receiver }}</th>
-    <th>{{ transaction.amount }}</th>
-  </tr>  
-</tbody>
-</table>
-
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-      <h4 class="modal-title" id="myModalLabel">Play the Lottery</h4>
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Feeling Lucky</a>
     </div>
-    <div class="modal-body">
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+
+<div class="container theme-showcase" role="main">
+
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <h1>Welcome to the Stellar Lottery, {{accountName}}!</h1>
+    <p></p>
+    <p>
+      <!--
+      <button href="#" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Play the Lottery &raquo;
+      </button>
+      -->
+      <br>
       <label>
         Choose the amount you want to spend:
-        <!--
-        <select class="form-control">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-        </select>
-        -->
         <select ng-model="lotteryAmount" ng-options="a.amount for a in lotteryAmounts" class="form-control"></select>
-      </label>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      <button type="button" class="btn btn-primary" ng-click="playLottery()">Play!</button>
+      </label> 
+      <br>
+      <button type="button" class="btn btn-primary btn-lg" ng-click="playLottery()">Play now!</button>    
+    </p>
+  </div>
+
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+
+      <h3>Transaction List</h3>
+      <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Sender</th><th>Receiver</th><th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="transaction in transactionLog.txs">
+          <th>{{ transaction.sender }}</th>
+          <th>{{ transaction.receiver }}</th>
+          <th>{{ transaction.amount }}</th>
+        </tr>  
+      </tbody>
+      </table>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Play the Lottery</h4>
+          </div>
+          <div class="modal-body">
+            <label>
+              Choose the amount you want to spend:
+              <select ng-model="lotteryAmount" ng-options="a.amount for a in lotteryAmounts" class="form-control"></select>
+            </label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" ng-click="playLottery()">Play!</button>
+          </div>
+        </div>
+      </div>
+      </div>    
+
     </div>
   </div>
-</div>
 </div> 
