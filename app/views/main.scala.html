@@ -13,7 +13,9 @@
     <link href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")" rel="stylesheet">
   </head>
   <body>
-<input  type="hidden" id="ws-url" value="@routes.Application.socket.webSocketURL()"/> 
+    <input  type="hidden" id="ws-url" value="removed"/> 
+    <input  type="hidden" id="play-lottery-url" value="@routes.Application.playLottery.absoluteURL(secure = request.secure)"/> 
+    <input  type="hidden" id="get-transactions-url" value="@routes.Application.getTransactions.absoluteURL(secure = request.secure)"/> 
 
     <div ng-view></div> 
 

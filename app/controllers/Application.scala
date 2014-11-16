@@ -1,6 +1,7 @@
 package controllers
 
-import actors.WebsocketActor
+import models._
+import models.Lottery._
 import play.api.mvc._
 import play.api.mvc._
 import play.api.Play.current
@@ -8,13 +9,13 @@ import stellar._
 import play.api.libs.json.{JsArray, JsValue, Json}
 import play.api.mvc.Cookie
 import play.api.mvc.DiscardingCookie
+import play.api.data._
+import play.api.data.Forms._
 
 object Application extends Controller {
 
   def index = Action { implicit request =>
-
     val cookie = request.cookies.get("accName")
-    println("the cookie is " + cookie)
     cookie match {
       case Some(accName) => Ok(views.html.index("Your new application is ready."))
       case None => 
@@ -23,12 +24,35 @@ object Application extends Controller {
           case None => Ok("unfortunately there are no more test accounts left")
         }
     }
-
-    
   }
-
+/*
   def socket = WebSocket.acceptWithActor[String, String] { request => out =>
     WebsocketActor.props(out)
+  }
+*/
+
+  //PlayLottery(amount: Int, accName: String, msgType: String = "playLottery")
+  val playLotteryForm = Form(
+    mapping(
+      "amount" -> number,
+      "accName" -> nonEmptyText
+    )(PlayLottery.apply)(PlayLottery.unapply)
+  )
+  def playLottery = Action { implicit request =>
+    playLotteryForm.bindFromRequest.fold(
+      formWithErrors => {
+        println(s"playLotteryForm hasErrors: $playLotteryForm")
+      },
+      playLottery => {
+        Lottery.playLottery(playLottery)
+      }
+    )
+    Ok("")
+  }
+
+  def getTransactions = Action { implicit request =>
+    val (inTxs, outTxs) = Lottery.getTransactions
+    Ok(Json.toJson(SendTransactions(inTxs, outTxs)))
   }
 
 }

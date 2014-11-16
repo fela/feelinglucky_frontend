@@ -16,6 +16,10 @@ angular.module('myApp.controllers', [])
 
   $scope.cannotPlay = false;
 
+  window.setInterval(function() {
+    WS.getTransactions();
+  }, 2000); //ugly hack ...
+
   $scope.playLottery = function() {
     $scope.cannotPlay = true;
     window.setTimeout(function() {
@@ -27,7 +31,6 @@ angular.module('myApp.controllers', [])
     }, 5000);
 
     var msg = {
-        msgType: "playLottery", 
         amount: $scope.lotteryAmount.amount,
         accName: $cookies.accName
     };
