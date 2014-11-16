@@ -5,7 +5,7 @@ import models.Lottery._
 import play.api.mvc._
 import play.api.mvc._
 import play.api.Play.current
-import stellar._
+//import stellar._
 import play.api.libs.json.{JsArray, JsValue, Json}
 import play.api.mvc.Cookie
 import play.api.mvc.DiscardingCookie
