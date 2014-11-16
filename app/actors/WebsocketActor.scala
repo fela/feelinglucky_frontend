@@ -53,7 +53,6 @@ class WebsocketActor(out: ActorRef) extends Actor {
           val (outTxs, inTxs) = Main.splitOutIn(txs)
           //inTxs are received payments
           val inWithNameFiltered = inTxs.txs.filter { tx =>
-            println(s"trying to get accName for: ${tx.account}: ${StellerDummy.accNameForId(tx.account)}")
             tx.isPayment && 
             StellerDummy.accNameForId(tx.account).isDefined
           }
@@ -94,8 +93,6 @@ class WebsocketActor(out: ActorRef) extends Actor {
             val destName = StellerDummy.accNameForId((tx.rawJson \ "tx" \ "Destination").as[String]).getOrElse("Unknown Account")
             Transaction("Stellar Lottery", destName, amount + s"($currency)")
           }
-          println("inWithName: " + inWithName)
-          println("outWithName: " + outWithName)
           (inWithName, outWithName)
 
       }
@@ -110,11 +107,9 @@ class WebsocketActor(out: ActorRef) extends Actor {
         if (playLottery.amount > 0 && playLottery.amount <= 3)
         if (now - lastPlayLotteryReceived >= playLotteryRate)
       } yield {
-        println("we have received a valid playLottery msg: " + playLottery)
         lastPlayLotteryReceived = getTime
 
         StellerDummy.accForName(playLottery.accName).foreach { acc =>
-          println(s"sending from acc: ${acc}")
           stellar.API.makePayment(
             secret = acc.secretKey, 
             receiver = "gsMxVfhj1GmHspP5iARzMxZBZmPya9NALr", 
